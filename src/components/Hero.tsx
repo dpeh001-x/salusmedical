@@ -9,7 +9,7 @@ export default function Hero() {
         src="/images/banner.png"
         alt=""
         fill
-        className="object-cover"
+        className="object-contain object-top md:object-cover md:object-center"
         priority
       />
       {/* Dark overlay for readability */}
