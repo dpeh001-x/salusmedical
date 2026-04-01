@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const services = [
   {
     tag: "Paediatrics",
@@ -8,9 +10,8 @@ const services = [
       </svg>
     ),
     name: "Child",
-    path: "salusmedical.co/child",
     desc: "Home vaccination and growth review — nurturing care from newborn through adolescence in the comfort of your home.",
-    url: "https://salusmedical.co/child",
+    url: "/child",
   },
   {
     tag: "Primary care",
@@ -20,9 +21,8 @@ const services = [
       </svg>
     ),
     name: "General Health",
-    path: "salusmedical.co/health",
     desc: "Holistic primary care, preventive screenings, and chronic disease management — available via telemedicine for your convenience.",
-    url: "https://salusmedical.co/health",
+    url: "/health",
   },
   {
     tag: "Intimate health",
@@ -32,9 +32,8 @@ const services = [
       </svg>
     ),
     name: "Sexual Wellness",
-    path: "salusmedical.co/sexual-wellness",
     desc: "Confidential, evidence-based treatments and personalised wellness plans for your intimate health needs.",
-    url: "https://salusmedical.co/sexual-wellness",
+    url: "/sexual-wellness",
   },
 ];
 
@@ -49,9 +48,8 @@ const servicesRow2 = [
       </svg>
     ),
     name: "Legacy",
-    path: "salusmedical.co/legacy",
     desc: "LPA, AMD, ACP, and will writing — safeguarding your legacy with comprehensive long-term planning.",
-    url: "https://salusmedical.co/legacy",
+    url: "/legacy",
   },
   {
     tag: "Dermatology",
@@ -62,9 +60,8 @@ const servicesRow2 = [
       </svg>
     ),
     name: "Skin",
-    path: "salusmedical.co/skin",
     desc: "Skin diagnosis, lifestyle management, and medications — expert dermatological care without invasive procedures.",
-    url: "https://salusmedical.co/skin",
+    url: "/skin",
   },
 ];
 
@@ -74,10 +71,8 @@ function ServiceCard({
   service: (typeof services)[0];
 }) {
   return (
-    <a
+    <Link
       href={service.url}
-      target="_blank"
-      rel="noopener noreferrer"
       className="group bg-navy-card border border-gold/[0.12] rounded-md p-6 flex flex-col relative overflow-hidden transition-all duration-400 hover:-translate-y-[3px] hover:border-gold/30 hover:shadow-[0_6px_28px_rgba(0,0,0,0.2)]"
     >
       <div className="absolute top-0 left-0 w-full h-[3px] bg-gold opacity-40 group-hover:opacity-100 transition-opacity duration-400" />
@@ -85,11 +80,8 @@ function ServiceCard({
         {service.tagIcon}
         {service.tag}
       </div>
-      <div className="text-lg font-bold text-white mb-[3px] font-display">
+      <div className="text-lg font-bold text-white mb-2.5 font-display">
         {service.name}
-      </div>
-      <div className="text-[11px] text-gold/60 font-body mb-2.5">
-        {service.path}
       </div>
       <p className="text-[13px] text-slate-muted leading-[1.65] font-light flex-1">
         {service.desc}
@@ -97,7 +89,7 @@ function ServiceCard({
       <span className="text-[11px] tracking-[1.5px] uppercase text-gold inline-flex items-center gap-1.5 mt-3.5 font-medium group-hover:gap-2.5 transition-all">
         Visit clinic &rarr;
       </span>
-    </a>
+    </Link>
   );
 }
 
