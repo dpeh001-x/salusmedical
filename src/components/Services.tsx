@@ -87,7 +87,7 @@ function ServiceCard({
         {service.desc}
       </p>
       <span className="text-[11px] tracking-[1.5px] uppercase text-gold inline-flex items-center gap-1.5 mt-3.5 font-medium group-hover:gap-2.5 transition-all">
-        Visit clinic &rarr;
+        View more &rarr;
       </span>
     </Link>
   );
