@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 /* ── Data ─────────────────────────────────────────────────────── */
 
@@ -12,8 +13,8 @@ const conditions = [
     approach: [
       "Personalised topical regimen",
       "Chemical peels (salicylic / glycolic)",
-      "LED blue light therapy (415nm)",
-      "Hormonal assessment & management",
+      "Oral antibiotics (doxycycline / lymecycline)",
+      "Isotretinoin therapy",
       "Scar prevention protocol",
     ],
     evidence: "AAD Guidelines 2024 · Cochrane Systematic Review · JAAD",
@@ -25,9 +26,10 @@ const conditions = [
     approach: [
       "Barrier repair with ceramide complex (3:1:1 ratio)",
       "Topical calcineurin inhibitors",
-      "Dupilumab biologic therapy (moderate–severe)",
       "Environmental trigger mapping",
-      "Wet wrap therapy for flares",
+      "Antihistamine treatment",
+      "Topical corticosteroids",
+      "Emollient therapy",
     ],
     evidence: "NICE 2023 · BAD Guidelines · EADV Consensus",
   },
@@ -262,12 +264,12 @@ export default function SkinPage() {
             and international guidelines.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <a
-              href="#contact"
+            <Link
+              href="/skin/analyser"
               className="inline-block bg-gradient-to-br from-gold to-gold-dark text-navy font-display text-[11px] tracking-[3px] uppercase px-10 py-4 border border-gold hover:from-gold-light hover:to-gold transition-all"
             >
               Free Skin Analysis
-            </a>
+            </Link>
             <a
               href="#conditions"
               className="inline-block bg-transparent text-slate-muted font-display text-[11px] tracking-[3px] uppercase px-8 py-4 border border-slate-muted/50 hover:border-gold hover:text-gold-dark transition-all"
@@ -365,12 +367,12 @@ export default function SkinPage() {
                 </span>
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
               </div>
-              <a
-                href="#contact"
+              <Link
+                href="/skin/analyser"
                 className="w-full text-center inline-block bg-transparent text-slate-muted font-display text-[11px] tracking-[3px] uppercase px-8 py-3.5 border border-slate-muted/50 hover:border-gold hover:text-gold transition-all"
               >
                 Analyse Your Skin
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -655,12 +657,12 @@ export default function SkinPage() {
               </div>
             ))}
           </div>
-          <a
-            href="#contact"
+          <Link
+            href="/skin/analyser"
             className="inline-block bg-gradient-to-br from-gold to-gold-dark text-navy font-display text-[11px] tracking-[3px] uppercase px-10 py-4 border border-gold hover:from-gold-light hover:to-gold transition-all"
           >
-            Book a Consultation
-          </a>
+            Launch Skin Analyser
+          </Link>
           <p className="text-[10px] text-slate-muted/50 mt-4 tracking-[1.5px] font-display">
             For educational purposes only
           </p>
