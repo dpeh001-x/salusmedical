@@ -27,12 +27,19 @@ export async function POST(req: Request) {
     });
 
     const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Anthropic API error:", JSON.stringify(data));
+      return NextResponse.json({ error: true, message: data.error?.message || "API request failed" }, { status: res.status });
+    }
+
     const text =
       data.content?.map((b: { text?: string }) => b.text || "").join("") || "";
     const clean = text.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(clean);
     return NextResponse.json(parsed);
-  } catch {
-    return NextResponse.json({ error: true }, { status: 500 });
+  } catch (err) {
+    console.error("Skin analyser error:", err);
+    return NextResponse.json({ error: true, message: String(err) }, { status: 500 });
   }
 }
