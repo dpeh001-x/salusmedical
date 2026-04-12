@@ -38,7 +38,8 @@ const servicesRow2 = [
     name: "Legacy",
     subdomain: "salusmedical.co/legacy",
     desc: "Wills, LPA, AMD, and ACP — planning for the future with peace of mind.",
-    url: "/legacy",
+    url: "https://salus-legacy-app.vercel.app/",
+    external: true,
   },
 ];
 
@@ -67,10 +68,13 @@ function Corners() {
 }
 
 /* ── service card ── */
-function ServiceCard({ s }: { s: (typeof services)[0] }) {
+function ServiceCard({ s }: { s: (typeof services)[0] & { external?: boolean } }) {
+  const linkProps = s.external
+    ? { href: s.url, target: "_blank" as const, rel: "noopener noreferrer" }
+    : { href: s.url };
   return (
     <Link
-      href={s.url}
+      {...linkProps}
       className="group bg-white/[0.04] border border-gold/[0.1] rounded-[5px] p-5 flex flex-col relative overflow-hidden transition-all duration-400 hover:-translate-y-[2px] hover:border-gold/30 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
     >
       <div className="absolute top-0 left-0 w-full h-[2.5px] bg-gold opacity-30 group-hover:opacity-100 transition-opacity duration-400" />
