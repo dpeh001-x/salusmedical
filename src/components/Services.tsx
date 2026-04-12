@@ -10,7 +10,7 @@ const services = [
       </svg>
     ),
     name: "Child",
-    desc: "Home vaccination and growth review — nurturing care from newborn through adolescence in the comfort of your home.",
+    desc: "Home vaccination and growth review from newborn through adolescence.",
     url: "/child",
   },
   {
@@ -21,7 +21,7 @@ const services = [
       </svg>
     ),
     name: "General Health",
-    desc: "Holistic primary care, preventive screenings, and chronic disease management — available via telemedicine for your convenience.",
+    desc: "Primary care, cancer screenings, and travel medicine — available via telemedicine.",
     url: "/health",
   },
   {
@@ -32,7 +32,7 @@ const services = [
       </svg>
     ),
     name: "Sexual Wellness",
-    desc: "Confidential, evidence-based treatments and personalised wellness plans for your intimate health needs.",
+    desc: "Confidential, evidence-based treatments and personalised wellness plans.",
     url: "/sexual-wellness",
   },
 ];
@@ -48,7 +48,7 @@ const servicesRow2 = [
       </svg>
     ),
     name: "Legacy",
-    desc: "LPA, AMD, ACP, and will writing — safeguarding your legacy with comprehensive long-term planning.",
+    desc: "Wills, LPA, AMD, and ACP — planning for the future with peace of mind.",
     url: "/legacy",
   },
   {
@@ -60,7 +60,7 @@ const servicesRow2 = [
       </svg>
     ),
     name: "Skin",
-    desc: "Skin diagnosis, lifestyle management, and medications — expert dermatological care without invasive procedures.",
+    desc: "Diagnosis, lifestyle management, and medications — no invasive procedures.",
     url: "/skin",
   },
 ];
@@ -100,10 +100,10 @@ export default function Services() {
         Our specialties
       </p>
       <h2 className="font-display text-[clamp(24px,3.5vw,38px)] text-center mb-3 font-semibold text-white">
-        Five pillars of care
+        Pillars of Care
       </h2>
       <p className="text-center text-slate-muted max-w-[500px] mx-auto mb-[46px] font-body text-sm leading-[1.8] font-light">
-        Five dedicated disciplines, united by a singular mission — to safeguard
+        Dedicated disciplines, united by a singular mission — to safeguard
         what matters most.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 max-w-[920px] mx-auto">

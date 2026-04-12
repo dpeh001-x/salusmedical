@@ -10,21 +10,13 @@ export default function Mission() {
         </h2>
         <div className="w-[60px] h-[2px] bg-gold mx-auto mb-7 rounded-sm" />
         <p className="font-body text-slate-muted text-sm leading-[1.85] font-light mb-[18px]">
-          From child vaccinations to ongoing health support, our services are
-          designed to fit seamlessly into your family&apos;s daily life.
+          From life&apos;s earliest moments to its most meaningful milestones,
+          we are here to care for you — holistically and compassionately.
         </p>
         <p className="font-body text-slate-muted text-sm leading-[1.85] font-light mb-[18px]">
-          No crowded clinics, no stressful waiting rooms — just trusted care in
-          the comfort and security of your own home.
-        </p>
-        <p className="font-body text-slate-muted text-sm leading-[1.85] font-light mb-[18px]">
-          With us, you can focus on what matters most: keeping your loved ones
-          healthy and happy. We believe the best care starts where you feel
-          safest — at home.
-        </p>
-        <p className="font-body text-slate-muted text-sm leading-[1.85] font-light mb-[18px]">
-          Our commitment is to deliver personalised healthcare designed around
-          your needs, ensuring comfort, trust, and peace of mind.
+          Our commitment is to deliver personalised healthcare shaped around
+          your needs, so you can feel confident in the efficiency, convenience,
+          comfort, and trust that comes with every visit.
         </p>
         <div className="mt-8 text-[clamp(15px,2vw,20px)] text-gold font-semibold font-display px-[26px] py-[18px] border border-gold/20 rounded bg-gold/[0.04] inline-block">
           Take Control of Your Health — Simple, Affordable, Yours.
