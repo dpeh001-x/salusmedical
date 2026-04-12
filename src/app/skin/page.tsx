@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { CustomSelect, type SelectOption } from "@/components/CustomFormElements";
 
 /* ── Data ─────────────────────────────────────────────────────── */
 
@@ -225,6 +226,15 @@ export default function SkinPage() {
   const [routineSel, setRoutineSel] = useState(0);
   const [timeOfDay, setTimeOfDay] = useState<"am" | "pm">("am");
   const [testimonialIdx, setTestimonialIdx] = useState(0);
+  const [skinConcern, setSkinConcern] = useState("Acne / Breakouts");
+
+  const skinConcernOptions: SelectOption[] = [
+    { value: "Acne / Breakouts", label: "Acne / Breakouts" },
+    { value: "Eczema / Dermatitis", label: "Eczema / Dermatitis" },
+    { value: "Rosacea", label: "Rosacea" },
+    { value: "Pigmentation / Melasma", label: "Pigmentation / Melasma" },
+    { value: "General Skin Health", label: "General Skin Health" },
+  ];
 
   // Auto-rotate testimonials
   useEffect(() => {
@@ -724,13 +734,12 @@ export default function SkinPage() {
                 <div className="text-[9px] tracking-[2px] text-slate-muted/60 uppercase mb-2 font-display">
                   Primary Concern
                 </div>
-                <select className="w-full px-4 py-3 bg-navy border border-gold/[0.12] text-slate-muted text-[13px] font-display outline-none focus:border-gold/50 transition-colors">
-                  <option>Acne / Breakouts</option>
-                  <option>Eczema / Dermatitis</option>
-                  <option>Rosacea</option>
-                  <option>Pigmentation / Melasma</option>
-                  <option>General Skin Health</option>
-                </select>
+                <CustomSelect
+                  value={skinConcern}
+                  onChange={setSkinConcern}
+                  options={skinConcernOptions}
+                  placeholder="Select a concern"
+                />
               </div>
               <button className="w-full text-center bg-gradient-to-br from-gold to-gold-dark text-navy font-display text-[11px] tracking-[3px] uppercase px-8 py-4 border border-gold hover:from-gold-light hover:to-gold transition-all mt-2">
                 Book Consultation

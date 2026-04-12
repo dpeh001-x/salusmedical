@@ -1126,7 +1126,13 @@ export default function HealthDashboardPage() {
               options={[{value:"all",label:"Gender"},{value:"M",label:"Male"},{value:"F",label:"Female"}]}
               placeholder="Gender"
             />
-            <input type="number" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} style={{backgroundColor:"rgba(201,168,76,0.15)",borderColor:"rgba(201,168,76,0.4)"}} className="text-white placeholder-blue-300 text-sm rounded-xl px-3 py-2 w-20 border" />
+            <div className="relative flex items-center text-white text-sm rounded-xl px-3 py-2 w-20 border" style={{backgroundColor:"rgba(201,168,76,0.15)",borderColor:"rgba(201,168,76,0.4)"}}>
+              <input type="text" inputMode="numeric" placeholder="Age" value={age} onChange={(e) => { if (e.target.value === "" || /^\d*$/.test(e.target.value)) setAge(e.target.value); }} className="w-full bg-transparent outline-none text-white placeholder-blue-300 text-sm [appearance:textfield]" />
+              <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex flex-col">
+                <button type="button" onClick={() => setAge(String(Math.min(120, (parseInt(age)||0)+1)))} className="text-gold/60 hover:text-gold text-[9px] leading-none">▲</button>
+                <button type="button" onClick={() => setAge(String(Math.max(0, (parseInt(age)||0)-1)))} className="text-gold/60 hover:text-gold text-[9px] leading-none">▼</button>
+              </div>
+            </div>
             {filled.length > 0 && (
               <button onClick={() => setView("report")} className="ml-auto font-bold text-sm px-4 py-2 rounded-xl shadow hover:opacity-90 transition bg-gold text-navy">
                 View Report
@@ -1341,10 +1347,18 @@ export default function HealthDashboardPage() {
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => { const n = visits.slice(); n[i] = {...n[i], label: e.target.value}; setVisits(n); }}
                         className="text-sm font-medium text-slate-700 bg-transparent outline-none w-full placeholder-slate-300" />
-                      <input type="date" value={x.date}
+                      <input type="text" placeholder="DD/MM/YYYY" value={x.date ? (() => { const p = x.date.split("-"); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : x.date; })() : ""}
                         onClick={(e) => e.stopPropagation()}
-                        onChange={(e) => { const n = visits.slice(); n[i] = {...n[i], date: e.target.value}; setVisits(n); }}
-                        className="text-xs text-slate-400 bg-transparent outline-none" />
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/[^\d/]/g, "");
+                          const parts = v.split("/");
+                          if (parts.length === 3 && parts[0].length === 2 && parts[1].length === 2 && parts[2].length === 4) {
+                            const n = visits.slice(); n[i] = {...n[i], date: `${parts[2]}-${parts[1]}-${parts[0]}`}; setVisits(n);
+                          } else {
+                            const n = visits.slice(); n[i] = {...n[i], date: v}; setVisits(n);
+                          }
+                        }}
+                        className="text-xs text-slate-400 bg-transparent outline-none placeholder-slate-300" />
                     </div>
                     <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
                       {Object.values(x.values).filter((y) => y !== "" && y !== undefined).length} tests
@@ -1427,9 +1441,9 @@ export default function HealthDashboardPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1">
-                      <input type="number" step="any" placeholder="Type your result here" value={raw}
-                        onChange={(e) => saveVal(test.key, e.target.value)}
-                        className="w-full text-base font-bold border-2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-300 outline-none placeholder-slate-300 transition"
+                      <input type="text" inputMode="decimal" placeholder="Type your result here" value={raw}
+                        onChange={(e) => { const v = e.target.value; if (v === "" || /^-?\d*\.?\d*$/.test(v)) saveVal(test.key, v); }}
+                        className="w-full text-base font-bold border-2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-300 outline-none placeholder-slate-300 transition [appearance:textfield]"
                         style={{color: st !== "empty" ? sc.text : "#1E293B", borderColor: st !== "empty" ? sc.border : "#E2E8F0"}} />
                     </div>
                     <button onClick={() => toggleUnit(test.key)}

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { CustomSelect, CustomDatePicker, type SelectOption } from "@/components/CustomFormElements";
 
 /* ── service card data ── */
 const services = [
@@ -98,6 +99,20 @@ export default function HomePage() {
   const moving = useRef(false);
   const touchStart = useRef({ x: 0, y: 0 });
   const touchDelta = useRef({ x: 0, y: 0 });
+
+  /* form state */
+  const [formDate, setFormDate] = useState("");
+  const [formTime, setFormTime] = useState("");
+  const [formService, setFormService] = useState("");
+
+  const timeOptions: SelectOption[] = [
+    { value: "", label: "Select a time" },
+    ...timeSlots.map((t) => ({ value: t, label: t })),
+  ];
+  const svcOptions: SelectOption[] = [
+    { value: "", label: "Select a service" },
+    ...serviceOptions.map((o) => ({ value: o, label: o })),
+  ];
 
   const goTo = useCallback(
     (i: number) => {
@@ -247,8 +262,20 @@ export default function HomePage() {
         <div
           className={`panel w-screen h-screen flex-shrink-0 relative overflow-y-auto flex items-center justify-center ${panelBg[0]}`}
         >
+          {/* Background banner image */}
+          <Image
+            src="/images/banner.png"
+            alt=""
+            fill
+            className="object-contain object-top md:object-cover md:object-center"
+            priority
+          />
+          {/* Dark overlay for readability */}
+          <div className="absolute inset-0 bg-navy/85" />
+          {/* Subtle gold radial glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,rgba(201,168,76,0.06),transparent_60%)]" />
           <Corners />
-          <div className="text-center max-w-[660px] px-5 font-body">
+          <div className="relative z-10 text-center max-w-[660px] px-5 font-body">
             <Image
               src="/images/Salus Medical Logo1.png"
               alt="Salus Medical"
@@ -287,7 +314,7 @@ export default function HomePage() {
           {/* swipe hint */}
           <button
             onClick={() => goTo(1)}
-            className="absolute bottom-7 left-1/2 -translate-x-1/2 flex items-center gap-1.5 opacity-40 text-[9px] tracking-[3px] uppercase text-white/50 font-body"
+            className="absolute bottom-7 left-1/2 -translate-x-1/2 flex items-center gap-1.5 opacity-40 text-[9px] tracking-[3px] uppercase text-white/50 font-body z-10"
           >
             <span>Swipe</span>
             <svg
@@ -465,9 +492,9 @@ export default function HomePage() {
                         *
                       </b>
                     </label>
-                    <input
-                      type="date"
-                      className={`${inputCls} [color-scheme:dark]`}
+                    <CustomDatePicker
+                      value={formDate}
+                      onChange={setFormDate}
                     />
                   </div>
                   <div className="flex flex-col gap-1">
@@ -477,23 +504,23 @@ export default function HomePage() {
                         *
                       </b>
                     </label>
-                    <select className={selectCls}>
-                      <option value="">Select a time</option>
-                      {timeSlots.map((t) => (
-                        <option key={t}>{t}</option>
-                      ))}
-                    </select>
+                    <CustomSelect
+                      value={formTime}
+                      onChange={setFormTime}
+                      options={timeOptions}
+                      placeholder="Select a time"
+                    />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-1">
                   <label className={labelCls}>Service</label>
-                  <select className={selectCls}>
-                    <option value="">Select a service</option>
-                    {serviceOptions.map((o) => (
-                      <option key={o}>{o}</option>
-                    ))}
-                  </select>
+                  <CustomSelect
+                    value={formService}
+                    onChange={setFormService}
+                    options={svcOptions}
+                    placeholder="Select a service"
+                  />
                 </div>
 
                 <div className="flex flex-col gap-1">

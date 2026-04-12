@@ -1,6 +1,27 @@
 "use client";
 
+import { useState } from "react";
+import { CustomSelect, CustomDatePicker, type SelectOption } from "@/components/CustomFormElements";
+
+const timeOptions: SelectOption[] = [
+  { value: "", label: "Select a time" },
+  ...["9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:00 PM","3:30 PM","4:00 PM","4:30 PM","5:00 PM"].map((t) => ({ value: t, label: t })),
+];
+
+const serviceOptions: SelectOption[] = [
+  { value: "", label: "Select a service" },
+  { value: "Child — Paediatrics", label: "Child — Paediatrics" },
+  { value: "General Health — Primary Care", label: "General Health — Primary Care" },
+  { value: "Sexual Wellness — Intimate Health", label: "Sexual Wellness — Intimate Health" },
+  { value: "Legacy — Planning for the Future", label: "Legacy — Planning for the Future" },
+  { value: "Skin — Dermatology", label: "Skin — Dermatology" },
+];
+
 export default function Contact() {
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [service, setService] = useState("");
+
   return (
     <section id="contact" className="py-[90px] px-5 bg-navy-light">
       <p className="font-body text-[11px] tracking-[5px] uppercase text-gold text-center mb-2.5 font-medium">
@@ -68,35 +89,13 @@ export default function Contact() {
               <label className="font-body text-[11px] text-slate-muted tracking-[0.6px]">
                 Preferred Date <span className="text-gold text-[10px] ml-[2px]">*</span>
               </label>
-              <input
-                type="date"
-                className="bg-navy-input border border-gold/[0.12] rounded px-3.5 py-[11px] text-[13px] text-[#F5F3ED] font-body outline-none w-full transition-colors focus:border-gold [color-scheme:dark]"
-              />
+              <CustomDatePicker value={date} onChange={setDate} />
             </div>
             <div className="flex flex-col gap-[5px]">
               <label className="font-body text-[11px] text-slate-muted tracking-[0.6px]">
                 Preferred Time <span className="text-gold text-[10px] ml-[2px]">*</span>
               </label>
-              <select className="bg-navy-input border border-gold/[0.12] rounded px-3.5 py-[11px] text-[13px] text-[#F5F3ED] font-body outline-none w-full transition-colors focus:border-gold appearance-none bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%238A9BB5%22%20stroke-width%3D%222.5%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_10px_center] pr-7">
-                <option value="">Select a time</option>
-                <option>9:00 AM</option>
-                <option>9:30 AM</option>
-                <option>10:00 AM</option>
-                <option>10:30 AM</option>
-                <option>11:00 AM</option>
-                <option>11:30 AM</option>
-                <option>12:00 PM</option>
-                <option>12:30 PM</option>
-                <option>1:00 PM</option>
-                <option>1:30 PM</option>
-                <option>2:00 PM</option>
-                <option>2:30 PM</option>
-                <option>3:00 PM</option>
-                <option>3:30 PM</option>
-                <option>4:00 PM</option>
-                <option>4:30 PM</option>
-                <option>5:00 PM</option>
-              </select>
+              <CustomSelect value={time} onChange={setTime} options={timeOptions} placeholder="Select a time" />
             </div>
           </div>
 
@@ -104,14 +103,7 @@ export default function Contact() {
             <label className="font-body text-[11px] text-slate-muted tracking-[0.6px]">
               Service
             </label>
-            <select className="bg-navy-input border border-gold/[0.12] rounded px-3.5 py-[11px] text-[13px] text-[#F5F3ED] font-body outline-none w-full transition-colors focus:border-gold appearance-none bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%238A9BB5%22%20stroke-width%3D%222.5%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_10px_center] pr-7">
-              <option value="">Select a service</option>
-              <option>Child — Paediatrics</option>
-              <option>General Health — Primary Care</option>
-              <option>Sexual Wellness — Intimate Health</option>
-              <option>Legacy — Planning for the Future</option>
-              <option>Skin — Dermatology</option>
-            </select>
+            <CustomSelect value={service} onChange={setService} options={serviceOptions} placeholder="Select a service" />
           </div>
 
           <div className="flex flex-col gap-[5px]">
