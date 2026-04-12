@@ -13,7 +13,7 @@ export default function Header() {
       <div className="container mx-auto flex items-center justify-between h-[72px] px-6 md:px-10">
         <Link href="/" className="flex items-center gap-3">
           <Image
-              src="/images/Salus Medical Logo1.png"
+              src="/images/Salus Medical Logo1 png.png"
               alt="Salus Medical"
               width={36}
               height={44}

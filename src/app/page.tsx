@@ -277,7 +277,7 @@ export default function HomePage() {
           <Corners />
           <div className="relative z-10 text-center max-w-[660px] px-5 font-body">
             <Image
-              src="/images/Salus Medical Logo1.png"
+              src="/images/Salus Medical Logo1 png.png"
               alt="Salus Medical"
               width={120}
               height={155}

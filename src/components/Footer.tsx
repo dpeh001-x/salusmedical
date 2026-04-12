@@ -13,7 +13,7 @@ export default function Footer() {
     <footer className="pt-[46px] pb-8 px-5 bg-navy border-t border-white/[0.06] text-center">
       <div className="flex items-center justify-center gap-2.5 mb-5">
         <Image
-          src="/images/Salus Medical Logo1.png"
+          src="/images/Salus Medical Logo1 png.png"
           alt="Salus Medical"
           width={28}
           height={34}

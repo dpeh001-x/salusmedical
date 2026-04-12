@@ -18,7 +18,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,rgba(201,168,76,0.06),transparent_60%)]" />
 
       <Image
-        src="/images/Salus Medical Logo1.png"
+        src="/images/Salus Medical Logo1 png.png"
         alt="Salus Medical"
         width={180}
         height={220}
