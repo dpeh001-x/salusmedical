@@ -10,6 +10,7 @@ const services = [
       </svg>
     ),
     name: "Child",
+    subdomain: "salusmedical.co/child",
     desc: "Home vaccination and growth review from newborn through adolescence.",
     url: "/child",
   },
@@ -21,6 +22,7 @@ const services = [
       </svg>
     ),
     name: "General Health",
+    subdomain: "salusmedical.co/health",
     desc: "Primary care, cancer screenings, and travel medicine — available via telemedicine.",
     url: "/health",
   },
@@ -32,6 +34,7 @@ const services = [
       </svg>
     ),
     name: "Sexual Wellness",
+    subdomain: "salusmedical.co/sexual-wellness",
     desc: "Confidential, evidence-based treatments and personalised wellness plans.",
     url: "/sexual-wellness",
   },
@@ -48,6 +51,7 @@ const servicesRow2 = [
       </svg>
     ),
     name: "Legacy",
+    subdomain: "salusmedical.co/legacy",
     desc: "Wills, LPA, AMD, and ACP — planning for the future with peace of mind.",
     url: "/legacy",
   },
@@ -60,6 +64,7 @@ const servicesRow2 = [
       </svg>
     ),
     name: "Skin",
+    subdomain: "salusmedical.co/skin",
     desc: "Diagnosis, lifestyle management, and medications — no invasive procedures.",
     url: "/skin",
   },
@@ -80,8 +85,11 @@ function ServiceCard({
         {service.tagIcon}
         {service.tag}
       </div>
-      <div className="text-lg font-bold text-white mb-2.5 font-display">
+      <div className="text-lg font-bold text-white mb-0.5 font-display">
         {service.name}
+      </div>
+      <div className="text-[10px] text-gold/50 mb-1.5 font-body">
+        {service.subdomain}
       </div>
       <p className="text-[13px] text-slate-muted leading-[1.65] font-light flex-1">
         {service.desc}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 /* ═══════════════════════════════════════════════
    DATA CONSTANTS
@@ -534,7 +534,7 @@ function AIChatBot({allTests, units, getBaseVal}: {
         <button onClick={() => setOpen(false)} className="text-white/60 hover:text-white text-xl">&times;</button>
       </div>
 
-      <div className="bg-white p-3 space-y-3 overflow-y-auto" style={{maxHeight: "350px", minHeight: "200px"}}>
+      <div className="bg-white p-3 space-y-3 overflow-y-auto custom-scrollbar" style={{maxHeight: "350px", minHeight: "200px"}}>
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
@@ -612,6 +612,106 @@ interface Visit {
 
 function mkVisit(): Visit {
   return {id: Date.now(), date: new Date().toISOString().split("T")[0], label: "", values: {}};
+}
+
+/* ═══════════════════════════════════════════════
+   CUSTOM SELECT COMPONENT
+   ═══════════════════════════════════════════════ */
+
+interface CustomSelectOption { value: string; label: string; }
+
+function CustomSelect({value, onChange, options, placeholder}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: CustomSelectOption[];
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  const selected = options.find((o) => o.value === value);
+  const label = selected ? selected.label : (placeholder || "Select");
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-white text-sm rounded-xl px-3 py-2 border transition-all"
+        style={{backgroundColor:"rgba(201,168,76,0.15)",borderColor:"rgba(201,168,76,0.4)"}}
+      >
+        <span>{label}</span>
+        <svg
+          className={"w-3.5 h-3.5 transition-transform duration-200 " + (open ? "rotate-180" : "")}
+          fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div
+        className={"absolute top-full left-0 mt-1.5 rounded-xl shadow-xl border z-50 min-w-[120px] overflow-hidden transition-all duration-200 origin-top " + (open ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0 pointer-events-none")}
+        style={{backgroundColor:"#0B1A33",borderColor:"rgba(201,168,76,0.4)"}}
+      >
+        {options.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            onClick={() => { onChange(o.value); setOpen(false); }}
+            className={"w-full text-left text-sm px-3 py-2 transition-colors " + (o.value === value ? "text-gold font-semibold" : "text-white")}
+            style={o.value === value ? {backgroundColor:"rgba(201,168,76,0.15)"} : {}}
+            onMouseEnter={(e) => { if (o.value !== value) (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(201,168,76,0.1)"; }}
+            onMouseLeave={(e) => { if (o.value !== value) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR STYLE TAG
+   ═══════════════════════════════════════════════ */
+
+function ScrollbarStyles() {
+  return (
+    <style>{`
+      .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(201,168,76,0.4) transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(201,168,76,0.4);
+        border-radius: 9999px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(201,168,76,1);
+      }
+      .hide-scrollbar {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+    `}</style>
+  );
 }
 
 /* ═══════════════════════════════════════════════
@@ -793,7 +893,7 @@ export default function HealthDashboardPage() {
     if (!c) return null;
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto p-5" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto custom-scrollbar p-5" onClick={(e) => e.stopPropagation()}>
           <div className="flex justify-between items-start mb-1">
             <h3 className="font-bold text-lg">{c.icon} {c.label}</h3>
             <button onClick={onClose} className="text-2xl text-slate-300 hover:text-slate-500">&times;</button>
@@ -849,6 +949,7 @@ export default function HealthDashboardPage() {
   if (view === "report") {
     return (
       <div className="min-h-screen p-4" style={{background:"linear-gradient(180deg, #F0EDE4 0%, #F7F5F0 50%, #EDE8DC 100%)"}}>
+        <ScrollbarStyles />
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-xl font-bold text-navy">Your Health Report</h1>
@@ -997,6 +1098,7 @@ export default function HealthDashboardPage() {
      ═══════════════════════════════════════════════ */
   return (
     <div className="min-h-screen pb-24" style={{background:"linear-gradient(180deg, #F0EDE4 0%, #F7F5F0 50%, #EDE8DC 100%)"}}>
+      <ScrollbarStyles />
       <div style={{background:"linear-gradient(135deg, #0B1A33 0%, #122647 50%, #1B3460 100%)"}} className="text-white px-4 py-5">
         <div className="flex items-center gap-2">
           <span className="text-2xl">🩸</span>
@@ -1018,11 +1120,12 @@ export default function HealthDashboardPage() {
         </div>
         {section === "dashboard" && (
           <div className="flex gap-2 mt-3 flex-wrap items-center">
-            <select value={gender} onChange={(e) => setGender(e.target.value)} style={{backgroundColor:"rgba(201,168,76,0.15)",borderColor:"rgba(201,168,76,0.4)"}} className="text-white text-sm rounded-xl px-3 py-2 border">
-              <option value="all" className="text-slate-800">Gender</option>
-              <option value="M" className="text-slate-800">Male</option>
-              <option value="F" className="text-slate-800">Female</option>
-            </select>
+            <CustomSelect
+              value={gender}
+              onChange={setGender}
+              options={[{value:"all",label:"Gender"},{value:"M",label:"Male"},{value:"F",label:"Female"}]}
+              placeholder="Gender"
+            />
             <input type="number" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} style={{backgroundColor:"rgba(201,168,76,0.15)",borderColor:"rgba(201,168,76,0.4)"}} className="text-white placeholder-blue-300 text-sm rounded-xl px-3 py-2 w-20 border" />
             {filled.length > 0 && (
               <button onClick={() => setView("report")} className="ml-auto font-bold text-sm px-4 py-2 rounded-xl shadow hover:opacity-90 transition bg-gold text-navy">
@@ -1274,7 +1377,7 @@ export default function HealthDashboardPage() {
           )}
 
           {/* Category Tabs */}
-          <div className="px-4 pt-2 overflow-x-auto">
+          <div className="px-4 pt-2 overflow-x-auto hide-scrollbar">
             <div className="flex gap-2 pb-2" style={{minWidth: "max-content"}}>
               {CATEGORIES.map((cat) => {
                 const cf = cat.tests.filter((t) => getBaseVal(t.key) !== null).length;

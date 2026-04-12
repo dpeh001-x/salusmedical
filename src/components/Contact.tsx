@@ -15,7 +15,8 @@ export default function Contact() {
       </p>
 
       <div className="max-w-[600px] mx-auto">
-        <form onSubmit={(e) => e.preventDefault()} className="space-y-3.5">
+        <form onSubmit={(e) => e.preventDefault()} className="relative bg-[#003267] border border-gold/[0.12] rounded-[5px] p-8 px-6 overflow-hidden mt-7 space-y-3.5">
+          <div className="absolute top-0 left-0 w-full h-[2.5px] bg-gradient-to-r from-gold/20 via-gold to-gold/20" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             <div className="flex flex-col gap-[5px]">
               <label className="font-body text-[11px] text-slate-muted tracking-[0.6px]">

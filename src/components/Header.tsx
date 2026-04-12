@@ -76,11 +76,11 @@ export default function Header() {
               About
             </Link>
             <Link
-              href="#schedule"
+              href="#contact"
               className="px-4 py-3 text-xs tracking-[1.5px] uppercase text-slate-muted hover:text-gold transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Schedule
+              Contact
             </Link>
             <Link
               href="#contact"

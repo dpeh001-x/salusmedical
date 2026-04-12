@@ -32,7 +32,7 @@ export default function Hero() {
         </span>
       </h1>
       <p className="relative z-10 font-body text-[clamp(14px,1.5vw,16px)] text-slate-muted max-w-[540px] leading-[1.8] mt-3.5 mb-10 font-light">
-        Comprehensive medical care across five specialized disciplines, guided by
+        Comprehensive medical care across specialized disciplines, guided by
         precision, compassion, and an unwavering commitment to your well-being.
       </p>
       <div className="relative z-10 flex gap-3.5 flex-wrap justify-center">
@@ -43,7 +43,7 @@ export default function Hero() {
           Explore Services
         </Link>
         <Link
-          href="#schedule"
+          href="#contact"
           className="inline-block bg-transparent text-white font-semibold text-xs tracking-[1.8px] uppercase px-[30px] py-3 rounded-[3px] border-[1.5px] border-white/20 hover:border-gold hover:text-gold transition-all"
         >
           Schedule Consultation
