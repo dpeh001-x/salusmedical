@@ -1,106 +1,197 @@
-# Salus Medical Website
+# Salus Medical — Monorepo
 
-Official website for **Salus Medical** — a Singapore-based healthcare provider offering comprehensive medical care across five specialised disciplines.
+This repository contains **three independent Next.js applications** that together make up the Salus Medical web presence. They are deployed behind a single nginx reverse proxy on AWS Lightsail and share the domain `salusmedical.co`.
 
-## Services
+```
+Salusmedical Main Website/
+├── Main/                              → Main marketing site (Next.js 14)
+├── Dermatology/facederm-explorer/     → AI Skin Analyser (Next.js 16, static)
+└── Sexual Health/sexual-health-guide/ → Sexual Health Guide (Next.js 16, static)
+```
 
-| Discipline | Route | Description |
+## Production routes
+
+| Route | App | Type |
 |---|---|---|
-| Child (Paediatrics) | `/child` | Home vaccination and growth review |
-| General Health (Primary Care) | `/health` | Holistic primary care, screenings, telemedicine |
-| Sexual Wellness (Intimate Health) | `/sexual-wellness` | Confidential, evidence-based sexual health consultations |
-| Legacy (Longevity) | `/legacy` | LPA, AMD, ACP, and will writing |
-| Skin (Dermatology) | `/skin` | Evidence-based skincare, in-clinic treatments, routines |
+| `/` | Main | SSR (Node, port 3000) |
+| `/skin`, `/health`, `/sexual-wellness`, etc. | Main | SSR |
+| `/api/*` | Main | API routes (used by static apps too) |
+| `/skin/explorer/` | Dermatology | Static export |
+| `/sexual-wellness/interactive/` | Sexual Health | Static export |
 
-## Tech Stack
+The two static apps call the Main app's `/api/skin-analyse` endpoint for AI features — no separate Node processes needed for them.
 
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS 3.4 with HSL CSS variable theming
-- **Language**: TypeScript
-- **Fonts**: Georgia serif (display), system sans-serif (body)
-- **Theme**: Dark navy (#0B1A33) / Gold (#C9A84C) healthcare palette
+## Prerequisites
 
-## Getting Started
+- **Node.js 20.x** (the two new apps use Next 16, which requires ≥18.18 — Node 20 is recommended)
+- **npm** 10+
+- **Git**
+- An **Anthropic API key** (for AI skin analyser & health chat features)
 
-### Prerequisites
+> **Windows + exFAT note**: Next.js's webpack resolver calls `readlinkSync` on every file. On exFAT drives this throws `EISDIR` and breaks the build. If your project is on an exFAT drive, see [Local quirks](#local-quirks) below. Move the project to an NTFS drive (typically `C:`) for the easiest experience.
 
-- Node.js 18+
-- npm
+## First-time setup
 
-### Development
+Each app is independent. Install + build each one separately.
+
+### 1. Main app (`Main/`)
 
 ```bash
+cd Main
 npm install
-npm run dev
+cp .env.example .env.local   # then fill in ANTHROPIC_API_KEY
+npm run dev                  # → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Required `.env.local` keys:
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
 
-### Production Build
+### 2. Dermatology Explorer (`Dermatology/facederm-explorer/`)
 
 ```bash
-npm run build
-npm start
+cd "Dermatology/facederm-explorer"
+npm install
+npm run dev                  # → http://localhost:3000
 ```
 
-## Project Structure
+> When developing standalone, the AI analyser will fail unless an API server is running. To test the full flow, run the Main app on port 3000 in a separate terminal — the static frontend calls `/api/skin-analyse` on the same origin.
 
+For local-only API testing, you can temporarily change `next.config.ts` to remove `basePath` and `output: "export"`, and add an `.env.local` with `ANTHROPIC_API_KEY` so the bundled `/api/analyse` route works.
+
+### 3. Sexual Health Guide (`Sexual Health/sexual-health-guide/`)
+
+```bash
+cd "Sexual Health/sexual-health-guide"
+npm install
+npm run dev                  # → http://localhost:3000
 ```
-src/
-  app/
-    page.tsx                # Homepage
-    layout.tsx              # Root layout (Header, Footer, SEO metadata)
-    globals.css             # Tailwind base + CSS variables
-    sitemap.ts              # Dynamic sitemap generation
-    robots.ts               # Robots.txt configuration
-    sexual-wellness/        # Sexual Wellness service page
-    skin/                   # Skin & Dermatology service page
-    terms/                  # Terms of service
-  components/
-    Header.tsx              # Fixed nav with logo, links, mobile menu
-    Hero.tsx                # Full-viewport hero with banner image
-    Services.tsx            # 5 service cards (3+2 grid)
-    Mission.tsx             # Mission statement section
-    Philosophy.tsx          # Philosophy quote section
-    CTA.tsx                 # Call-to-action section
-    Schedule.tsx            # Appointment booking form
-    Contact.tsx             # General enquiry form
-    Footer.tsx              # Site footer with service links
-    Divider.tsx             # Gold decorative divider
-    StructuredData.tsx      # JSON-LD (MedicalBusiness schema)
-public/
-  images/                   # Logo files + hero banner
-  manifest.json             # PWA manifest
-scripts/
-  setup-server.sh           # Ubuntu 22.04 Lightsail server setup
+
+Pure frontend — no API key required.
+
+## Common dev workflow
+
+When you're working on **one** app, just `cd` into it and run `npm run dev`. Each app runs on its own port 3000 by default — only run one dev server at a time, or override the port with `npm run dev -- -p 3001`.
+
+When you're working on a **cross-app feature** (e.g. the Dermatology Explorer's analyser button calling Main's API), you need both running:
+
+```bash
+# Terminal 1
+cd Main && npm run dev          # port 3000
+
+# Terminal 2 — override port
+cd "Dermatology/facederm-explorer" && npm run dev -- -p 3001
 ```
+
+Then update the fetch URL in the Dermatology app to `http://localhost:3000/api/skin-analyse` for local testing (revert before commit).
+
+## Production builds
+
+Each app builds independently:
+
+```bash
+# Main (server-rendered)
+cd Main && npm run build && npm start
+
+# Dermatology (static export → out/)
+cd "Dermatology/facederm-explorer" && npm run build
+
+# Sexual Health (static export → out/)
+cd "Sexual Health/sexual-health-guide" && npm run build
+```
+
+The two static apps produce an `out/` directory which is the entire deployable artifact.
 
 ## Deployment
 
-Hosted on **AWS Lightsail** (Nano instance, ap-southeast-1).
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the full server architecture, nginx config, and deploy commands.
 
-- **Reverse proxy**: Nginx
-- **Process manager**: PM2
-- **SSL**: Certbot (Let's Encrypt)
+Quick reference:
+- **Server**: AWS Lightsail Ubuntu, IP `13.213.143.89`
+- **SSH**: `ssh -i ~/.ssh/lightsail_default.pem ubuntu@13.213.143.89`
+- **Main app**: `/var/www/salusmedical` (managed by PM2)
+- **Static apps**: `/var/www/static/skin-explorer`, `/var/www/static/sexual-wellness-interactive`
+- **Nginx**: `/etc/nginx/sites-enabled/salusmedical`
 
-### Deploy steps
+## Local quirks
 
-```bash
-# On the server
-cd /var/www/salusmedical
-git pull origin feature/initial-site
-node ./node_modules/.bin/next build
-pm2 restart salusmedical
+### exFAT drive: `EISDIR: illegal operation on a directory, readlink`
+
+If your project lives on an exFAT-formatted drive (USB sticks, some external SSDs, sometimes `D:`/`E:` on Windows), the Main app build will fail. Reason: webpack calls `fs.readlinkSync` on every regular file expecting `EINVAL` if it's not a symlink, but exFAT throws `EISDIR`.
+
+Two options:
+
+**A. Move the project to an NTFS drive (recommended)** — typically `C:\`. Check with PowerShell:
+```powershell
+Get-Volume -DriveLetter E | Select-Object FileSystemType
 ```
 
-## SEO
+**B. Use the fs-patch shim** for builds. Save this to a path **without spaces** (e.g. `C:\temp\fs-patch.js`):
 
-- Open Graph + Twitter Card metadata
-- JSON-LD structured data (MedicalBusiness + WebSite schemas)
-- Dynamic sitemap at `/sitemap.xml`
-- Robots.txt at `/robots.txt`
-- Canonical URLs
+```js
+// C:\temp\fs-patch.js
+const fs = require('fs');
+const origSync = fs.readlinkSync, origAsync = fs.readlink, origPromise = fs.promises.readlink.bind(fs.promises);
+const makeEINVAL = p => Object.assign(new Error(`EINVAL: invalid argument, readlink '${p}'`),
+  { code: 'EINVAL', errno: -22, syscall: 'readlink', path: String(p) });
 
-## License
+fs.readlinkSync = (p, o) => { try { return origSync.call(fs, p, o); } catch (e) { if (e.code === 'EISDIR') throw makeEINVAL(p); throw e; } };
+fs.readlink = (p, o, cb) => { if (typeof o === 'function') { cb = o; o = undefined; } origAsync.call(fs, p, o, (e, r) => e?.code === 'EISDIR' ? cb(makeEINVAL(p)) : cb(e, r)); };
+fs.promises.readlink = async (p, o) => { try { return await origPromise(p, o); } catch (e) { if (e.code === 'EISDIR') throw makeEINVAL(p); throw e; } };
+```
 
-Proprietary. All rights reserved by Salus Medical Pte Ltd.
+Then build with:
+```bash
+NODE_OPTIONS="--require C:\\temp\\fs-patch.js" npm run build
+```
+
+(Static-export builds for the two sub-apps run cleanly on exFAT — only the Main app's full SSR build trips this.)
+
+### Spaces in the project path
+
+The folder name `Salusmedical Main Website` contains spaces, which breaks Node's `NODE_OPTIONS` parser. Always pass paths to `--require` from a directory **without** spaces (the example above uses `C:\temp`).
+
+### Node version drift
+
+- `Main/` was originally written for Next 14 / Node 18. It still builds on Node 20.
+- `Dermatology/` and `Sexual Health/` use Next 16 + React 19. **Node 20+ required.**
+
+If you have `nvm`, switch with:
+```bash
+nvm use 20
+```
+
+## Repository layout reference
+
+```
+.
+├── Main/
+│   ├── src/app/                    # Next.js App Router pages
+│   │   ├── api/                    # Server API routes (Anthropic-backed)
+│   │   ├── skin/, health/, ...     # Service pages
+│   │   └── page.tsx                # Homepage
+│   ├── src/components/             # Shared React components
+│   ├── public/images/              # Logos, banner, etc.
+│   └── scripts/setup-server.sh     # One-shot Lightsail provision script
+│
+├── Dermatology/facederm-explorer/
+│   ├── src/app/                    # Single-page Next.js app
+│   │   ├── components/             # Analyser, Routines, Treatments, Atlas
+│   │   └── page.tsx                # Tab container
+│   ├── public/images/              # Logo (synced from Main)
+│   └── next.config.ts              # basePath: "/skin/explorer", output: "export"
+│
+└── Sexual Health/sexual-health-guide/
+    ├── app/                        # Next.js app (note: not under src/)
+    ├── components/                 # Male tabs, Female tabs, Quiz, etc.
+    ├── data/                       # Conditions, contraceptives, PE stats
+    ├── public/images/              # Logo (synced from Main)
+    └── next.config.ts              # basePath: "/sexual-wellness/interactive", output: "export"
+```
+
+## Need help?
+
+- Server access / deployment issues → see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
+- API keys / env vars → contact the project owner
+- For an end-to-end deploy walkthrough → see [`docs/DEPLOYMENT.md#deploying-changes`](docs/DEPLOYMENT.md#deploying-changes)

@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ivory: #FAF6EF;
+  --color-ivory2: #F5EFE3;
+  --color-cream: #EDE4D3;
+  --color-gold: #C9A84C;
+  --color-gold-lt: #E2CFA0;
+  --color-gold-dk: #8B6820;
+  --color-gold-wm: #D4AF6A;
+  --color-char: #1C1812;
+  --color-smoke: #6B6258;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.18; }
+  50% { opacity: 0.32; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+* { box-sizing: border-box; }
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #D4AF6A, #8B6820);
+  border: 2.5px solid #FAF6EF;
+  box-shadow: 0 2px 8px rgba(139, 104, 32, 0.45);
+  cursor: pointer;
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #D4AF6A, #8B6820);
+  border: 2.5px solid #FAF6EF;
+  box-shadow: 0 2px 8px rgba(139, 104, 32, 0.45);
+  cursor: pointer;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+body {
+  font-family: Georgia, serif;
+  color: #1C1812;
+  min-height: 100vh;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 1.4s ease-in-out infinite;
+}

@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 65% 12%;
+    --background-alt: 220 52% 16%;
+    --foreground: 40 30% 96%;
+    --card: 220 60% 15%;
+    --card-foreground: 40 30% 96%;
+    --popover: 220 60% 15%;
+    --popover-foreground: 40 30% 96%;
+    --primary: 220 65% 12%;
+    --primary-foreground: 40 30% 96%;
+    --secondary: 40 52% 54%;
+    --secondary-foreground: 220 65% 12%;
+    --muted: 220 25% 55%;
+    --muted-foreground: 218 22% 62%;
+    --accent: 40 52% 54%;
+    --accent-foreground: 220 65% 12%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 52% 54% / 0.12;
+    --input: 220 40% 30%;
+    --ring: 40 52% 54%;
+    --radius: 0.375rem;
+    --gold: 40 52% 54%;
+    --gold-light: 45 60% 72%;
+    --gold-dark: 40 60% 22%;
+    --navy: 220 65% 12%;
+    --navy-light: 220 52% 16%;
+    --navy-card: 220 60% 15%;
+    /* --font-display and --font-body are injected by next/font in layout.tsx
+       (Cinzel for display, Inter for body). */
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceRight {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
+/* ── Hero cinematic background ── */
+@keyframes kenBurns {
+  0%   { transform: scale(1.05) translate3d(0, 0, 0); }
+  50%  { transform: scale(1.18) translate3d(-1.2%, -1.8%, 0); }
+  100% { transform: scale(1.05) translate3d(0, 0, 0); }
+}
+
+@keyframes haloPulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 0.85; transform: scale(1.08); }
+}
+
+@keyframes lightSweep {
+  0%   { transform: translateX(-40%) rotate(8deg); opacity: 0; }
+  20%  { opacity: 0.9; }
+  80%  { opacity: 0.9; }
+  100% { transform: translateX(140%) rotate(8deg); opacity: 0; }
+}
+
+@keyframes bokehDriftA {
+  0%   { transform: translate3d(0, 0, 0); }
+  50%  { transform: translate3d(2.5%, -1.8%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes bokehDriftB {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-3%, 2%, 0) scale(1.06); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes emberRise {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translate3d(-2vw, -110vh, 0); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50%      { filter: brightness(1.08) saturate(1.12); }
+}
+
+@keyframes auroraShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.cinematic-kenburns {
+  animation: kenBurns 28s ease-in-out infinite;
+  will-change: transform;
+}
+.cinematic-shimmer {
+  animation: shimmer 9s ease-in-out infinite;
+}
+.cinematic-halo {
+  animation: haloPulse 6.5s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+.cinematic-light-sweep {
+  animation: lightSweep 11s ease-in-out infinite;
+  animation-delay: 2s;
+  will-change: transform, opacity;
+}
+.cinematic-bokeh-a {
+  animation: bokehDriftA 22s ease-in-out infinite;
+}
+.cinematic-bokeh-b {
+  animation: bokehDriftB 26s ease-in-out infinite;
+}
+.cinematic-aurora {
+  background-size: 200% 200%;
+  animation: auroraShift 18s ease-in-out infinite;
+}
+.cinematic-ember {
+  animation: emberRise linear infinite;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-kenburns,
+  .cinematic-halo,
+  .cinematic-light-sweep,
+  .cinematic-bokeh-a,
+  .cinematic-bokeh-b,
+  .cinematic-aurora,
+  .cinematic-shimmer,
+  .cinematic-ember,
+  .hud-scanline,
+  .hud-grid,
+  .hud-corner,
+  .hud-glitch {
+    animation: none !important;
+  }
+}
+
+/* ── Futuristic HUD overlays for scrubbed video bg ── */
+@keyframes scanlineMove {
+  0%   { transform: translateY(-10vh); opacity: 0; }
+  10%  { opacity: 0.55; }
+  90%  { opacity: 0.55; }
+  100% { transform: translateY(110vh); opacity: 0; }
+}
+
+@keyframes gridShift {
+  0%, 100% { background-position: 0 0; }
+  50%      { background-position: 24px 24px; }
+}
+
+@keyframes hudCornerPulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+@keyframes hudGlitch {
+  0%, 92%, 100% { transform: translate3d(0,0,0); filter: none; opacity: 1; }
+  93%   { transform: translate3d(-2px,0,0); filter: hue-rotate(20deg); }
+  94%   { transform: translate3d(3px,0,0); filter: hue-rotate(-15deg); }
+  95%   { transform: translate3d(-1px,0,0); filter: none; }
+  96%   { transform: translate3d(0,0,0); }
+}
+
+@keyframes hudBlink {
+  0%, 49%, 100% { opacity: 1; }
+  50%, 99%      { opacity: 0.35; }
+}
+
+.hud-scanline {
+  animation: scanlineMove 7s linear infinite;
+  will-change: transform, opacity;
+}
+.hud-grid {
+  animation: gridShift 18s ease-in-out infinite;
+}
+.hud-corner {
+  animation: hudCornerPulse 3.6s ease-in-out infinite;
+}
+.hud-glitch {
+  animation: hudGlitch 9s steps(1, end) infinite;
+}
+.hud-blink {
+  animation: hudBlink 1.4s steps(1, end) infinite;
+}

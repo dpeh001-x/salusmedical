@@ -1,29 +1,37 @@
 # dependencies
-/node_modules
+**/node_modules/
 
 # next.js
-/.next/
-/out/
+**/.next/
+**/out/
 
 # production
-/build
+**/build/
+
+# env files (NEVER commit secrets)
+**/.env*.local
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 
 # debug
-npm-debug.log*
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
 
-# env files
-.env*.local
-
-# claude
+# claude / agent tooling
 .claude/
-
-# design reference
-salus-medical*.html
+**/.claude/
 
 # typescript
-*.tsbuildinfo
-next-env.d.ts
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# editor
+.vscode/
+.idea/
+
+# local fs-patch shim (see top-level README)
+fs-patch.js
