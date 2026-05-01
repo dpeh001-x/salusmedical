@@ -120,22 +120,33 @@ export default function CinematicVideoBackground({
       const dt = Math.max(1, now - prev);
       prev = now;
 
-      // Auto-decay velocity when input is idle so HUD stops animating
       const idleFor = now - lastInputAt.current;
-      if (idleFor > 120) {
-        lastDelta.current *= 0.86;
+
+      // Inertia: after scroll stops, keep nudging the target so the video
+      // drifts to a smooth halt instead of cutting dead. Decays exponentially.
+      if (idleFor > 80) {
+        if (Math.abs(lastDelta.current) > 0.05 && duration > 0) {
+          targetTime.current = Math.max(
+            0,
+            Math.min(
+              duration,
+              targetTime.current + lastDelta.current * sensitivity * 0.55,
+            ),
+          );
+        }
+        lastDelta.current *= 0.92;
         if (Math.abs(lastDelta.current) < 0.05) lastDelta.current = 0;
       }
 
       const cur = v.currentTime;
       const diff = targetTime.current - cur;
-      if (Math.abs(diff) > 0.005) {
+      if (Math.abs(diff) > 0.003) {
         const step = diff * smoothing;
         // Compute realised velocity in seconds-of-video / seconds-of-realtime
         const vel = (step / dt) * 1000;
         v.currentTime = Math.max(0, Math.min(duration || 0, cur + step));
         setVelocity(vel);
-      } else if (Math.abs(diff) <= 0.005) {
+      } else {
         setVelocity(0);
       }
       setHudTime(v.currentTime);
@@ -146,7 +157,7 @@ export default function CinematicVideoBackground({
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [duration, smoothing]);
+  }, [duration, smoothing, sensitivity]);
 
   /* ── HUD helpers ── */
   const fmt = (t: number) => {

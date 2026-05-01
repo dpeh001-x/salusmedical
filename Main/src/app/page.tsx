@@ -131,7 +131,7 @@ function ServiceCard({ s }: { s: Service }) {
 
 /* ── input class ── */
 const inputCls =
-  "bg-white/[0.08] border border-gold/[0.1] rounded-[3px] px-3 py-[9px] text-xs text-[#F5F3ED] font-body outline-none w-full transition-colors focus:border-gold placeholder:text-slate-muted/50";
+  "bg-white/[0.08] border border-gold/[0.1] rounded-[3px] px-2.5 py-[6px] text-[11px] text-[#F5F3ED] font-body outline-none w-full transition-colors focus:border-gold placeholder:text-slate-muted/50";
 const selectCls = `${inputCls} appearance-none bg-[url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%238A9BB5%22%20stroke-width%3D%222.5%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_10px_center] pr-7`;
 const labelCls = "text-[10px] text-slate-muted tracking-[0.5px] font-body";
 
@@ -285,7 +285,11 @@ export default function HomePage() {
       className="relative w-screen h-screen overflow-hidden"
     >
       {/* ── full-page scrub-on-scroll cinematic video ── */}
-      <CinematicVideoBackground src="/videos/seed-cinematic.mp4" />
+      <CinematicVideoBackground
+        src="/videos/seed-cinematic.mp4"
+        sensitivity={0.0065}
+        smoothing={0.1}
+      />
 
       {/* ── dots ── */}
       <div className="fixed right-6 top-1/2 -translate-y-1/2 z-[150] flex flex-col gap-3 max-md:right-2.5 max-md:gap-2">
@@ -533,26 +537,22 @@ export default function HomePage() {
           className={`panel w-screen h-screen flex-shrink-0 relative overflow-y-auto flex items-center justify-center ${panelBg[3]}`}
         >
           <Corners />
-          <div className="max-w-[540px] w-full px-5 pt-[70px] pb-5 font-body">
-            <p className="text-[11px] tracking-[5px] uppercase text-gold text-center mb-2 font-medium">
+          <div className="max-w-[540px] w-full px-5 pt-[78px] pb-2 font-body">
+            <p className="text-[10px] tracking-[5px] uppercase text-gold text-center mb-1 font-medium">
               Get in touch
             </p>
-            <h2 className="font-display text-[clamp(24px,3.5vw,38px)] text-center mb-3 font-semibold text-white">
+            <h2 className="font-display text-[clamp(18px,2.4vw,26px)] text-center mb-2 font-semibold text-white tracking-[2px]">
               Book a Consultation
             </h2>
-            <p className="text-center text-slate-muted max-w-[460px] mx-auto text-[13px] leading-[1.8] font-light">
-              For service details, partnership enquiries, or scheduling — fill
-              in the form below and our team will be in touch shortly.
-            </p>
 
-            <div className="relative bg-[#001A3D]/90 border border-gold/[0.12] rounded-[5px] p-6 overflow-hidden mt-7 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+            <div className="relative bg-[#001A3D]/90 border border-gold/[0.12] rounded-[5px] p-3 overflow-hidden backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
               <div className="absolute top-0 left-0 w-full h-[2.5px] bg-gradient-to-r from-gold/20 via-gold to-gold/20" />
               <form
                 onSubmit={(e) => e.preventDefault()}
-                className="space-y-2.5"
+                className="space-y-1.5"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                  <div className="flex flex-col gap-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                  <div className="flex flex-col gap-[3px]">
                     <label className={labelCls}>
                       First Name{" "}
                       <b className="text-gold font-normal ml-0.5 text-[9px]">
@@ -565,7 +565,7 @@ export default function HomePage() {
                       className={inputCls}
                     />
                   </div>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-[3px]">
                     <label className={labelCls}>
                       Last Name{" "}
                       <b className="text-gold font-normal ml-0.5 text-[9px]">
@@ -580,8 +580,8 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                  <div className="flex flex-col gap-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                  <div className="flex flex-col gap-[3px]">
                     <label className={labelCls}>
                       Email{" "}
                       <b className="text-gold font-normal ml-0.5 text-[9px]">
@@ -594,7 +594,7 @@ export default function HomePage() {
                       className={inputCls}
                     />
                   </div>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-[3px]">
                     <label className={labelCls}>
                       Phone{" "}
                       <b className="text-gold font-normal ml-0.5 text-[9px]">
@@ -609,8 +609,8 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                  <div className="flex flex-col gap-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                  <div className="flex flex-col gap-[3px]">
                     <label className={labelCls}>
                       Preferred Date{" "}
                       <b className="text-gold font-normal ml-0.5 text-[9px]">
@@ -622,7 +622,7 @@ export default function HomePage() {
                       onChange={setFormDate}
                     />
                   </div>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-[3px]">
                     <label className={labelCls}>
                       Preferred Time{" "}
                       <b className="text-gold font-normal ml-0.5 text-[9px]">
@@ -638,28 +638,30 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className={labelCls}>Service</label>
-                  <CustomSelect
-                    value={formService}
-                    onChange={setFormService}
-                    options={svcOptions}
-                    placeholder="Select a service"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                  <div className="flex flex-col gap-[3px]">
+                    <label className={labelCls}>Service</label>
+                    <CustomSelect
+                      value={formService}
+                      onChange={setFormService}
+                      options={svcOptions}
+                      placeholder="Select a service"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-[3px]">
+                    <label className={labelCls}>Message</label>
+                    <input
+                      type="text"
+                      placeholder="Any details we should know..."
+                      className={inputCls}
+                    />
+                  </div>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className={labelCls}>Message</label>
-                  <textarea
-                    placeholder="Any details you'd like us to know..."
-                    className={`${inputCls} resize-y min-h-[70px]`}
-                  />
-                </div>
-
-                <div className="mt-4 text-center">
+                <div className="mt-1.5 text-center">
                   <button
                     type="submit"
-                    className="bg-gold text-[#001033] font-semibold text-[11px] tracking-[2px] uppercase px-7 py-3 rounded-[3px] border-[1.5px] border-gold hover:bg-transparent hover:text-gold transition-all w-full max-w-[220px]"
+                    className="bg-gold text-[#001033] font-semibold text-[10px] tracking-[2px] uppercase px-6 py-1.5 rounded-[3px] border-[1.5px] border-gold hover:bg-transparent hover:text-gold transition-all w-full max-w-[220px]"
                   >
                     Confirm Appointment
                   </button>
