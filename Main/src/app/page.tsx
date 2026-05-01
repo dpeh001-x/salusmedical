@@ -284,11 +284,13 @@ export default function HomePage() {
       id="home-wrapper"
       className="relative w-screen h-screen overflow-hidden"
     >
-      {/* ── full-page scrub-on-scroll cinematic video ── */}
+      {/* ── full-page autoplay video; scroll boosts playback rate ── */}
       <CinematicVideoBackground
         src="/videos/seed-cinematic.mp4"
-        sensitivity={0.0065}
-        smoothing={0.1}
+        baseRate={1.0}
+        maxRate={6.0}
+        sensitivity={0.014}
+        smoothing={0.12}
       />
 
       {/* ── dots ── */}

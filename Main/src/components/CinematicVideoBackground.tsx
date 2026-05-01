@@ -4,79 +4,88 @@ import { useEffect, useRef, useState } from "react";
 
 type Props = {
   src?: string;
-  /** Higher = more video time per scroll tick. */
-  sensitivity?: number;
-  /** How quickly the video catches up to the target time (0..1). */
+  /** Base playback rate when idle. */
+  baseRate?: number;
+  /** Max playback rate at peak scroll energy. */
+  maxRate?: number;
+  /** How quickly the rate eases toward target each frame (0..1). */
   smoothing?: number;
+  /** How much each pixel of scroll/swipe contributes to speed-up energy. */
+  sensitivity?: number;
+  /** Per-frame multiplicative decay applied to scroll energy. */
+  decay?: number;
 };
 
 /**
- * Full-viewport cinematic video that scrubs on scroll/swipe.
- * - Scroll forward → video plays forward (faster the harder you scroll).
- * - Scroll back   → video plays in reverse.
- * - Idle          → video pauses where it is.
+ * Full-viewport cinematic video that loops at base speed and accelerates
+ * with scroll/swipe input.
+ *
+ * - Idle           → video plays forward at `baseRate` (default 1.0×) on loop.
+ * - Scroll/swipe   → playbackRate eases up toward `maxRate` based on how
+ *                    hard the user is scrolling. Direction-agnostic — any
+ *                    scroll energy speeds the video up.
+ * - When idle again → rate eases back to `baseRate`.
  *
  * Layered with a futuristic HUD on top (grid, scanline, corner brackets,
- * timecode + progress).  Renders below page content (z-index 0); panels
- * stack above with their own backgrounds.
+ * timecode + speed). Renders below page content (z-index 0).
  */
 export default function CinematicVideoBackground({
   src = "/videos/seed-cinematic.mp4",
-  sensitivity = 0.0035,
-  smoothing = 0.18,
+  baseRate = 1.0,
+  maxRate = 6.0,
+  smoothing = 0.12,
+  sensitivity = 0.012,
+  decay = 0.92,
 }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const targetTime = useRef(0);
-  const lastDelta = useRef(0);
-  const lastInputAt = useRef(0);
+  const energy = useRef(0); // 0..1, scroll-driven, decays toward 0
+  const targetRate = useRef(baseRate);
   const rafId = useRef<number | null>(null);
   const touchY = useRef(0);
   const touchX = useRef(0);
 
   const [duration, setDuration] = useState(0);
   const [hudTime, setHudTime] = useState(0);
-  const [velocity, setVelocity] = useState(0); // signed: + forward, - reverse
+  const [hudRate, setHudRate] = useState(baseRate);
   const [ready, setReady] = useState(false);
 
-  /* ── load + initial state ── */
+  /* ── load + start playback ── */
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
     const onMeta = () => {
       setDuration(v.duration || 0);
-      v.pause();
-      v.currentTime = 0;
+      v.loop = true;
+      v.muted = true;
+      v.playbackRate = baseRate;
+      // Some browsers reject autoplay if it isn't muted-and-playsinline at
+      // the time of `play()`. Both are set on the element, so this resolves.
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => undefined);
       setReady(true);
     };
     if (v.readyState >= 1) onMeta();
     else v.addEventListener("loadedmetadata", onMeta);
     return () => v.removeEventListener("loadedmetadata", onMeta);
-  }, []);
+  }, [baseRate]);
 
-  /* ── input handlers (wheel + touch) ── */
+  /* ── input handlers (wheel + touch + arrow keys) ── */
   useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-
-    const pushDelta = (delta: number) => {
-      if (!duration) return;
-      const next = Math.max(
-        0,
-        Math.min(duration, targetTime.current + delta * sensitivity),
+    const pushEnergy = (deltaPx: number) => {
+      // Energy adds the *magnitude* of scroll (direction-agnostic) and
+      // saturates toward 1.0 so very fast scrolling doesn't blow up.
+      const next = Math.min(
+        1,
+        energy.current + Math.abs(deltaPx) * sensitivity,
       );
-      targetTime.current = next;
-      lastDelta.current = delta;
-      lastInputAt.current = performance.now();
+      energy.current = next;
     };
 
     const onWheel = (e: WheelEvent) => {
-      // Use whichever axis dominates — page uses horizontal swipe via wheel
-      // (deltaX) on trackpads and deltaY for vertical wheels.
       const d =
         Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      pushDelta(d);
+      pushEnergy(d);
     };
-
     const onTouchStart = (e: TouchEvent) => {
       const t = e.touches[0];
       touchX.current = t.clientX;
@@ -87,15 +96,12 @@ export default function CinematicVideoBackground({
       const dx = touchX.current - t.clientX;
       const dy = touchY.current - t.clientY;
       const d = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-      // touch moves are large so weight them up (4×) and reset anchor
-      pushDelta(d * 4);
+      pushEnergy(d * 4);
       touchX.current = t.clientX;
       touchY.current = t.clientY;
     };
     const onKey = (e: KeyboardEvent) => {
-      if (!duration) return;
-      if (e.key === "ArrowRight") pushDelta(220);
-      if (e.key === "ArrowLeft") pushDelta(-220);
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") pushEnergy(220);
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });
@@ -108,47 +114,33 @@ export default function CinematicVideoBackground({
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("keydown", onKey);
     };
-  }, [duration, sensitivity]);
+  }, [sensitivity]);
 
-  /* ── RAF: smoothly seek currentTime → targetTime ── */
+  /* ── RAF: ease playbackRate toward target, decay energy ── */
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    let prev = performance.now();
 
-    const tick = (now: number) => {
-      const dt = Math.max(1, now - prev);
-      prev = now;
+    const tick = () => {
+      // Decay scroll energy each frame.
+      energy.current *= decay;
+      if (energy.current < 0.001) energy.current = 0;
 
-      const idleFor = now - lastInputAt.current;
+      // Map energy 0..1 → rate baseRate..maxRate (eased)
+      // Use smoothstep-ish curve for a more "weighted" feel.
+      const eased = energy.current * energy.current * (3 - 2 * energy.current);
+      targetRate.current = baseRate + (maxRate - baseRate) * eased;
 
-      // Inertia: after scroll stops, keep nudging the target so the video
-      // drifts to a smooth halt instead of cutting dead. Decays exponentially.
-      if (idleFor > 80) {
-        if (Math.abs(lastDelta.current) > 0.05 && duration > 0) {
-          targetTime.current = Math.max(
-            0,
-            Math.min(
-              duration,
-              targetTime.current + lastDelta.current * sensitivity * 0.55,
-            ),
-          );
-        }
-        lastDelta.current *= 0.92;
-        if (Math.abs(lastDelta.current) < 0.05) lastDelta.current = 0;
-      }
+      // Ease actual playbackRate toward target.
+      const cur = v.playbackRate;
+      const next = cur + (targetRate.current - cur) * smoothing;
+      // Clamp & write back.
+      v.playbackRate = Math.max(baseRate, Math.min(maxRate, next));
 
-      const cur = v.currentTime;
-      const diff = targetTime.current - cur;
-      if (Math.abs(diff) > 0.003) {
-        const step = diff * smoothing;
-        // Compute realised velocity in seconds-of-video / seconds-of-realtime
-        const vel = (step / dt) * 1000;
-        v.currentTime = Math.max(0, Math.min(duration || 0, cur + step));
-        setVelocity(vel);
-      } else {
-        setVelocity(0);
-      }
+      // Update HUD state (throttle to avoid React thrash — only when meaningfully changed)
+      setHudRate((prev) =>
+        Math.abs(prev - v.playbackRate) > 0.02 ? v.playbackRate : prev,
+      );
       setHudTime(v.currentTime);
 
       rafId.current = requestAnimationFrame(tick);
@@ -157,7 +149,7 @@ export default function CinematicVideoBackground({
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [duration, smoothing, sensitivity]);
+  }, [baseRate, maxRate, smoothing, decay]);
 
   /* ── HUD helpers ── */
   const fmt = (t: number) => {
@@ -168,8 +160,8 @@ export default function CinematicVideoBackground({
     return `${m}:${s}.${cs}`;
   };
   const progress = duration ? Math.min(1, hudTime / duration) : 0;
-  const dir = velocity > 0.05 ? "FWD" : velocity < -0.05 ? "REV" : "IDLE";
-  const speed = Math.abs(velocity).toFixed(2);
+  const isBoosting = hudRate > baseRate + 0.05;
+  const speed = hudRate.toFixed(2);
 
   return (
     <div
@@ -181,6 +173,8 @@ export default function CinematicVideoBackground({
         ref={videoRef}
         src={src}
         muted
+        autoPlay
+        loop
         playsInline
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
@@ -251,10 +245,10 @@ export default function CinematicVideoBackground({
         <span className="hud-blink text-gold">●</span>
         <span>SALUS · CIN-FEED</span>
         <span className="text-gold/50">|</span>
-        <span>{ready ? "LINK OK" : "LINK ··"}</span>
+        <span>{ready ? "LIVE" : "LINK ··"}</span>
       </div>
 
-      {/* ── 9. Bottom HUD: timecode + direction + progress ── */}
+      {/* ── 9. Bottom HUD: timecode + speed + progress ── */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-[min(560px,80vw)] px-3 py-2 flex items-center gap-3 text-[9px] tracking-[2px] uppercase text-gold/85 font-mono border border-gold/20 bg-black/30 backdrop-blur-sm rounded-sm">
         <span className="text-gold">TC</span>
         <span className="text-[#F5F3ED]">{fmt(hudTime)}</span>
@@ -269,14 +263,12 @@ export default function CinematicVideoBackground({
         <span
           className={
             "px-1.5 py-[1px] rounded-[2px] border " +
-            (dir === "FWD"
-              ? "border-gold/60 text-gold"
-              : dir === "REV"
-              ? "border-[#E8D48B]/70 text-[#E8D48B]"
-              : "border-gold/20 text-gold/40")
+            (isBoosting
+              ? "border-[#E8D48B]/80 text-[#FBF7E8] bg-[#E8D48B]/10"
+              : "border-gold/40 text-gold/80")
           }
         >
-          {dir} · {speed}×
+          {speed}×
         </span>
       </div>
     </div>
