@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, type ComponentType } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,6 +9,7 @@ import {
   HeartPulse,
   Sparkles,
   ScrollText,
+  type LucideIcon,
 } from "lucide-react";
 import { CustomSelect, CustomDatePicker, type SelectOption } from "@/components/CustomFormElements";
 import CinematicVideoBackground from "@/components/CinematicVideoBackground";
@@ -20,7 +21,7 @@ type Service = {
   desc: string;
   url: string;
   external?: boolean;
-  Icon: ComponentType<{ className?: string; strokeWidth?: number }>;
+  Icon: LucideIcon;
 };
 
 const services: Service[] = [
@@ -510,17 +511,17 @@ export default function HomePage() {
               Take Control of Your Health — Simple, Affordable, Yours.
             </div>
 
-            {/* philosophy quote */}
-            <div className="mt-8 max-w-[540px] mx-auto relative px-3.5">
-              <span className="absolute top-[-16px] left-[-4px] text-[56px] text-gold/20 font-display leading-none">
+            {/* philosophy quote — opacity 70%, body font, smaller */}
+            <div className="mt-8 max-w-[500px] mx-auto relative px-3.5 opacity-70">
+              <span className="absolute top-[-12px] left-[-4px] text-[42px] text-gold/20 font-display leading-none">
                 &ldquo;
               </span>
-              <p className="font-display text-[clamp(15px,2vw,21px)] leading-[1.7] italic text-[#F5F3ED]">
+              <p className="font-body text-[clamp(11px,1.3vw,13.5px)] leading-[1.75] italic font-light text-[#F5F3ED]">
                 Salus, the Roman goddess of health and safety, lends us more
                 than a name. She represents the standard we hold ourselves to —
                 thoughtful, dedicated care that puts your wellbeing first.
               </p>
-              <p className="text-[11px] text-gold tracking-[3px] uppercase mt-3">
+              <p className="font-body text-[9.5px] text-gold tracking-[2.5px] uppercase mt-2.5 font-medium">
                 The Salus Medical Team
               </p>
             </div>
@@ -544,7 +545,7 @@ export default function HomePage() {
               in the form below and our team will be in touch shortly.
             </p>
 
-            <div className="relative bg-[#003267] border border-gold/[0.12] rounded-[5px] p-6 overflow-hidden mt-7">
+            <div className="relative bg-[#001A3D]/90 border border-gold/[0.12] rounded-[5px] p-6 overflow-hidden mt-7 backdrop-blur-sm shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
               <div className="absolute top-0 left-0 w-full h-[2.5px] bg-gradient-to-r from-gold/20 via-gold to-gold/20" />
               <form
                 onSubmit={(e) => e.preventDefault()}
